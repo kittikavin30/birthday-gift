@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <audio id="bg-music" src="Please be true.mp3" loop></audio>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBD❤️</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #ffbbe5c7;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #canvas {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #text-container {
+            position: absolute;
+            left: 5%;
+            top: 40%;
+            transform: translateY(-50%);
+            z-index: 10;
+            color: rgb(0, 0, 0);
+            pointer-events: none;
+        }
+
+        .line {
+            font-size: 1.5rem;
+            margin: 15px 0; 
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid #ff4d6d;
+            width: 0;
+            opacity: 0;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 1s ease;
+        }
+        #start-btn {
+            padding: 20px 40px; font-size: 2rem; cursor: pointer;
+            background: #ff4d6d; color: white; border: none; border-radius: 50px;
+            box-shadow: 0 0 20px #ff4d6d;
+            font-family: inherit;
+        }
+        #start-btn:hover { transform: scale(1.1); }
+        
+        @keyframes typing {
+            from { width: 0; opacity: 1; }
+            to { width: 100%; opacity: 1; }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+    </style>
+</head>
+<body>
+    <div id="overlay">
+        <button id="start-btn">Click to Open 🎁</button>
+    </div>
+
+    <div id="text-container"></div>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const textContainer = document.getElementById('text-container');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const colors = [
+            "#ff9aa2", "#ffb7b2", "#ffdac1", "#e2f0cb", 
+            "#b5ead7", "#c7ceea", "#fffd8d", "#ff4d6d"
+        ];
+
+        const config = {
+            treeColor: "#4d2600",
+            growSpeed: 0.005,
+            windSpeed: 0.0015,
+            windForce: 1.5
+        };
+
+        const messages = [
+            "ไอหมู ❤️",
+            "Happy Birthday 🎂",
+            "มีความสุขมากๆ ✨",
+            "สุขภาพร่างกายแข็งแรงมีแต่ความสุข 🌈",
+            "ขอให้มีแต่เรื่องให้ยิ้มเยอะๆ 😊",
+            "โตขึ้นอีกปีแล้วตั้งใจเรียนเป็นเด็กดีหล่ะ 🎁"
+        ];
+
+        async function playText() {
+            for (let i = 0; i < messages.length; i++) {
+                const line = document.createElement('div');
+                line.classList.add('line');
+                line.innerText = messages[i];
+                textContainer.appendChild(line);
+                const duration = messages[i].length * 0.1; 
+                line.style.animation = `typing ${duration}s steps(${messages[i].length}) forwards, blink 0.5s step-end infinite alternate`;
+                await new Promise(r => setTimeout(r, (duration * 1000) + 1000));
+                line.style.borderRight = 'none';
+            }
+        }
+
+        let growState = 0; 
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const time = Date.now() * config.windSpeed;
+            if (growState < 1) growState += config.growSpeed;
+
+            // ปรับความสูงต้นไม้เป็น 120
+            drawBranch(canvas.width / 2 + 150, canvas.height, 120 * growState, 0, 20, 0, time, 0);
+            
+            requestAnimationFrame(draw);
+        }
+
+        function drawBranch(x, y, len, angle, width, depth, time, colorIdx) {
+            ctx.beginPath();
+            ctx.save();
+            ctx.strokeStyle = config.treeColor;
+            ctx.lineWidth = width;
+            ctx.lineCap = "round";
+            
+            const sway = Math.sin(time + depth) * config.windForce * (depth / 5); 
+            const finalAngle = angle + sway;
+
+            ctx.translate(x, y);
+            ctx.rotate(finalAngle * Math.PI / 180);
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -len);
+            ctx.stroke();
+
+            // --- วาดหัวใจตามข้อต่อ (ถมกลาง) ---
+            if (depth >= 2 && depth <= 6 && growState > 0.5) {
+                drawHeart(0, -len/2, depth, time, colorIdx + depth); 
+            }
+
+            // --- Logic ใหม่: สร้างทรงหัวใจ (Heart Shape Logic) ---
+            if (len > 19) { 
+                let leftAngle = -30;
+                let rightAngle = 30;
+
+                // [สำคัญ] ถ้าเป็นกิ่งแรก (Depth 0) ให้ฉีกขาออกกว้างๆ (45 องศา)
+                // เพื่อสร้างร่องตรงกลางหัวใจ
+                if (depth === 0) {
+                    leftAngle = -5;
+                    rightAngle = 5;
+                }
+
+                // กิ่งซ้าย
+                drawBranch(0, -len, len * 0.8, leftAngle, width * 0.7, depth + 1, time, colorIdx + 1);
+                // กิ่งขวา
+                drawBranch(0, -len, len * 0.8, rightAngle, width * 0.7, depth + 1, time, colorIdx + 2);
+            } else {
+                if (growState > 0.6) {
+                   drawHeart(0, -len, depth, time, colorIdx);
+                }
+            }
+            ctx.restore();
+        }
+
+        function drawHeart(x, y, depth, time, colorIdx) {
+            const color = colors[colorIdx % colors.length];
+            // หัวใจขนาดใหญ่ (Size 12)
+            const size = 18 + Math.sin(time * 3 + depth) * 2; 
+
+            ctx.fillStyle = color;
+            ctx.shadowBlur = 5; 
+            ctx.shadowColor = color;
+            
+            ctx.beginPath();
+            const hx = x;
+            const hy = y + 10; 
+            
+            ctx.moveTo(hx, hy);
+            ctx.bezierCurveTo(hx, hy - size/2, hx - size, hy - size/2, hx - size, hy);
+            ctx.bezierCurveTo(hx - size, hy + size/2, hx, hy + size, hx, hy + size*1.5);
+            ctx.bezierCurveTo(hx, hy + size, hx + size, hy + size/2, hx + size, hy);
+            ctx.bezierCurveTo(hx + size, hy - size/2, hx, hy - size/2, hx, hy);
+            ctx.fill();
+            
+            ctx.shadowBlur = 0;
+        }
+
+        document.getElementById('start-btn').addEventListener('click', function() {
+    const overlay = document.getElementById('overlay');
+
+    const audio = document.getElementById('bg-music'); // <-- เพิ่มบรรทัดนี้
+    audio.volume = 0.5; // (เลือกใส่หรือไม่ก็ได้) ปรับความดัง 0.1 ถึง 1.0 // <-- เพิ่มบรรทัดนี้
+    audio.play(); // <-- เพิ่มบรรทัดนี้ (สำคัญที่สุด)
+    // 1. ทำให้ฉากบังค่อยๆ จางหาย
+    overlay.style.opacity = '0';
+    
+    setTimeout(() => {
+        overlay.style.display = 'none'; // เอาฉากออก
+        
+        // 2. สั่งให้เริ่มทำงาน
+        draw();      // เริ่มวาดต้นไม้
+        playText();  // เริ่มขึ้นตัวหนังสือ
+    }, 1000); // รอ 1 วินาทีให้ฉากจางหมดก่อนค่อยเริ่ม
+});
+        
+        window.onresize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+    </script>
+</body>
+</html>
