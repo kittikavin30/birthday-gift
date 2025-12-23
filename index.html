@@ -9,14 +9,11 @@
         body {
             margin: 0;
     overflow: hidden;
-    
-    /* ลบอันเดิมทิ้ง (background-color: #020202;) แล้วใส่ 4 บรรทัดนี้แทนครับ */
-    background-image: url('bg.png');       /* <-- ใส่ชื่อไฟล์รูปของคุณตรงนี้ */
-    background-size: cover;                /* สั่งให้ขยายเต็มจอเสมอ */
-    background-position: center;           /* จัดให้อยู่ตรงกลาง */
-    background-repeat: no-repeat;          /* ห้ามซ้ำภาพ */
+    background-image: url('bg.png');       
+    background-size: cover;                
+    background-position: center;           
+    background-repeat: no-repeat;       
 
-    /* ...ค่าอื่นๆ เหมือนเดิม... */
     font-family: 'Courier New', Courier, monospace;
     display: flex;
     align-items: center;
@@ -133,7 +130,6 @@
             const time = Date.now() * config.windSpeed;
             if (growState < 1) growState += config.growSpeed;
 
-            // ปรับความสูงต้นไม้เป็น 120
             drawBranch(canvas.width / 2 + 150, canvas.height, 120 * growState, 0, 20, 0, time, 0);
             
             requestAnimationFrame(draw);
@@ -155,18 +151,14 @@
             ctx.lineTo(0, -len);
             ctx.stroke();
 
-            // --- วาดหัวใจตามข้อต่อ (ถมกลาง) ---
             if (depth >= 2 && depth <= 6 && growState > 0.5) {
                 drawHeart(0, -len/2, depth, time, colorIdx + depth); 
             }
 
-            // --- Logic ใหม่: สร้างทรงหัวใจ (Heart Shape Logic) ---
-            if (len > 19) { 
+            if (len > 15) { 
                 let leftAngle = -30;
                 let rightAngle = 30;
 
-                // [สำคัญ] ถ้าเป็นกิ่งแรก (Depth 0) ให้ฉีกขาออกกว้างๆ (45 องศา)
-                // เพื่อสร้างร่องตรงกลางหัวใจ
                 if (depth === 0) {
                     leftAngle = -5;
                     rightAngle = 5;
@@ -186,8 +178,8 @@
 
         function drawHeart(x, y, depth, time, colorIdx) {
             const color = colors[colorIdx % colors.length];
-            // หัวใจขนาดใหญ่ (Size 12)
-            const size = 18 + Math.sin(time * 3 + depth) * 2; 
+            
+            const size = 19 + Math.sin(time * 3 + depth) * 2; 
 
             ctx.fillStyle = color;
             ctx.shadowBlur = 5; 
@@ -210,19 +202,16 @@
         document.getElementById('start-btn').addEventListener('click', function() {
     const overlay = document.getElementById('overlay');
 
-    const audio = document.getElementById('bg-music'); // <-- เพิ่มบรรทัดนี้
-    audio.volume = 0.5; // (เลือกใส่หรือไม่ก็ได้) ปรับความดัง 0.1 ถึง 1.0 // <-- เพิ่มบรรทัดนี้
-    audio.play(); // <-- เพิ่มบรรทัดนี้ (สำคัญที่สุด)
-    // 1. ทำให้ฉากบังค่อยๆ จางหาย
+    const audio = document.getElementById('bg-music'); 
+    audio.volume = 0.5; 
+    audio.play(); 
     overlay.style.opacity = '0';
     
     setTimeout(() => {
-        overlay.style.display = 'none'; // เอาฉากออก
-        
-        // 2. สั่งให้เริ่มทำงาน
-        draw();      // เริ่มวาดต้นไม้
-        playText();  // เริ่มขึ้นตัวหนังสือ
-    }, 1000); // รอ 1 วินาทีให้ฉากจางหมดก่อนค่อยเริ่ม
+        overlay.style.display = 'none';
+        draw();     
+        playText();  
+    }, 1000); 
 });
         
         window.onresize = () => {
@@ -231,4 +220,5 @@
         }
     </script>
 </body>
+
 </html>
