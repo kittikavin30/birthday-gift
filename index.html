@@ -8,12 +8,19 @@
     <style>
         body {
             margin: 0;
-            overflow: hidden;
-            background-color: #ffbbe5c7;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            align-items: center;
-            height: 100vh;
+    overflow: hidden;
+    
+    /* ลบอันเดิมทิ้ง (background-color: #020202;) แล้วใส่ 4 บรรทัดนี้แทนครับ */
+    background-image: url('bg.png');       /* <-- ใส่ชื่อไฟล์รูปของคุณตรงนี้ */
+    background-size: cover;                /* สั่งให้ขยายเต็มจอเสมอ */
+    background-position: center;           /* จัดให้อยู่ตรงกลาง */
+    background-repeat: no-repeat;          /* ห้ามซ้ำภาพ */
+
+    /* ...ค่าอื่นๆ เหมือนเดิม... */
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    align-items: center;
+    height: 100vh;
         }
 
         #canvas {
