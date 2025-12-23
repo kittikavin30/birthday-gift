@@ -179,7 +179,7 @@
         function drawHeart(x, y, depth, time, colorIdx) {
             const color = colors[colorIdx % colors.length];
             
-            const size = 19 + Math.sin(time * 3 + depth) * 2; 
+            const size = 20 + Math.sin(time * 3 + depth) * 2; 
 
             ctx.fillStyle = color;
             ctx.shadowBlur = 5; 
@@ -222,3 +222,4 @@
 </body>
 
 </html>
+
